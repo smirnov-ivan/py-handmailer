@@ -1,0 +1,79 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    z-index: 100;
+    background: #0000006e;
+    padding: 20%;
+    padding-top: 3rem;
+}
+
+.components {
+    display: none;
+}
+
+html, body {
+    background: #93c07e;
+    max-width: 100%;
+}
+
+#app {
+    max-width: 100%;
+    padding: 3rem;
+}
+
+.menu, .window {
+    background: whitesmoke;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+.menu ul {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.menu li {
+    list-style: none;
+    border-bottom: 1px solid silver;
+    padding: .25rem;
+    padding-bottom: 10px;
+}
+.menu li:hover {
+    border-bottom: 2px solid silver;
+    font-size: 129%;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: rgb(104, 127, 146);
+}
+
+.userlists ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.userlists li {
+    border-bottom: 1px solid grey;
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.userlists li:hover {
+    background: #eee;
+}
+
+.userlists li:last-of-type {
+    border-bottom: 0;
+}
+
+.userlists .bg {
+    background: #eee;
+    padding: 1rem;
+    border-radius: 5px;
+}
