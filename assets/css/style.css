@@ -10,6 +10,12 @@
     padding-top: 3rem;
 }
 
+.bg {
+    background: #eee;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
 .components {
     display: none;
 }
@@ -70,10 +76,4 @@ html, body {
 
 .userlists li:last-of-type {
     border-bottom: 0;
-}
-
-.userlists .bg {
-    background: #eee;
-    padding: 1rem;
-    border-radius: 5px;
 }

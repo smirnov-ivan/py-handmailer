@@ -1,5 +1,6 @@
 const storage = {
-    ul: {}
+    ul: {},
+    templates: {}
 }
 
 const update = (old, news) => {
@@ -48,6 +49,9 @@ const createMailingComponent = {
             ul: null,
             text: '',
             subject: '',
+            type: 1,
+            curTpl: null,
+            props: [],
             stage: 1,
         }
     },
@@ -55,22 +59,43 @@ const createMailingComponent = {
         send() {
             if (!this.ul) return
 
-            fetch('/sendmail', {
-                method: 'POST',
-                body: JSON.stringify({
+            if (this.type == 2) {
+                text = this.storage.templates[this.curTpl].text
+                this.storage.templates[this.curTpl].props.forEach((element, i) => {
+                    text = text.replace(new RegExp(`%${element}%`, 'g'), this.props[i])
+                })
+                body = JSON.stringify({
+                    name: this.ul,
+                    subject: this.storage.templates[this.curTpl].subject,
+                    text
+                })
+            } else {
+                body = JSON.stringify({
                     name: this.ul,
                     subject: this.subject,
                     text: this.text
                 })
+            }
+
+            this.stage = 2
+            fetch('/sendmail', {
+                method: 'POST',
+                body
             })
-            .then(() => alert('OK'))
+            .then(() => this.stage = 1)
             .catch(err => {
                 alert('Got an error! Check console!')
                 console.error(err)
+                this.stage = 1
             })
-            
+
             this.subject = ''
             this.text = ''
+        }
+    },
+    computed: {
+        getProps() {
+            return this.storage.templates[this.curTpl] ? this.storage.templates[this.curTpl].props : []
         }
     }
 }
@@ -173,7 +198,79 @@ const templateComponent = {
     template: getComponent('template'),
     data() {
         return {
+            storage,
+            name: '',
+            text: '',
+            subject: '',
+            props: [''],
+            isEdit: false,
+            editName: null,
+            editSubj: '',
+            editText: '',
+            editProps: ['']
+        }
+    },
+    methods: {
+        filterProps() {
+            return this.props.filter(i => i !== '')
+        },
+        addTemplate() {
+            let body = {}
+            body[this.name] = {
+                subject: this.subject,
+                text: this.text,
+                props: this.filterProps(this.props)
+            }
+            fetch('/commitTemplates',{
+                method: 'POST',
+                body: JSON.stringify(body)
+            }).then(async res => {
+                alert('Saved!')
+                this.storage.templates = update(this.storage.templates, await res.json())
+            })
+
+            this.name = ''
+            this.subject = ''
+            this.text = ''
+            this.props = ['']
+        },
+        edit(name) {
+            this.editName = name
+            this.editSubj = this.storage.templates[name].subject
+            this.editText = this.storage.templates[name].text
+            this.editProps = this.storage.templates[name].props
+            this.isEdit = true
+        },
+        save() {
+            let body = {}
+            body[this.editName] = {
+                subject: this.editSubj,
+                text: this.editText,
+                props: this.editProps.filter(i => i !== '')
+            }
+            fetch('/commitTemplates',{
+                method: 'POST',
+                body: JSON.stringify(body)
+            }).then(async res => {
+                this.storage.templates = update(this.storage.templates, await res.json())
+            })
+        },
+        rm(name) {
+            this.close()
+            fetch('/deleteTemplate', {
+                method: 'POST',
+                body: JSON.stringify({ name })
+            })
+
+            delete this.storage.templates[name]
             
+        },
+        close() {
+            this.editName = ''
+            this.editSubj = ''
+            this.editText = ''
+            this.editProps = ['']
+            this.isEdit = false
         }
     }
 }

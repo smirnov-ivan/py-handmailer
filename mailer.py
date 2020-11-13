@@ -11,7 +11,8 @@ def sendMail(config, receivers, subject, text):
         "To: "+', '.join(receivers),
         "Subject: "+subject,
         "",
-        text
+        text,
+        config['sign']
     )))
     connection.quit()
     return

@@ -20,6 +20,7 @@
                     <input type="text" placeholder="SMTP port" class="form-control w-25 mb-1" v-model="data.port">
                     <input type="text" placeholder="Username" class="form-control w-25 mb-1" v-model="data.username">
                     <input type="password" placeholder="Password" class="form-control w-25 mb-1" v-model="data.password">
+                    <textarea placeholder="Your sign" class="form-control w-25 mb-1" v-model="data.sign" rows="3"></textarea>
                     <button type="submit" class="btn btn-success" class="form-control w-25 mb-1">Save</button>
                 </form>
             </div>
@@ -80,24 +81,81 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Use:</label>
+                        <select class="form-control" v-model="type">
+                          <option value="1">Raw text</option>
+                          <option value="2">Template</option>
+                        </select>
+                    </div>
+                    <div class="form-group" v-if="type == 1">
                         <label>Type subject</label>
                         <input type="text" class="form-control" v-model="subject">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" v-if="type == 1">
                         <label>Type e-mail text</label>
                         <textarea class="form-control" rows="10" v-model="text"></textarea>
+                    </div>
+                    <div class="form-group" v-if="type == 2">
+                        <label>Select template:</label>
+                        <select class="form-control" v-model="curTpl">
+                          <option v-for="(l, name) in storage.templates" :key="name" :value="name">/% name %/</option>
+                        </select>
+                    </div>
+                    <div class="form-group" v-if="type == 2 && getProps.length > 0">
+                        <label>Complete props:</label>
+                        <input type="text" class="form-control mb-1" v-for="(prop, i) in getProps" :key="i" :placeholder="prop" v-model="props[i]">
                     </div>
                     <button type="submit" class="btn btn-success">Send</button>
                 </form>
             </div>
             <div v-else>
-                Sending... <br>
-                <button class="btn btn-danger">Don't wait</button>
+                <h5>Sending...</h5>
             </div>
         </div>
 
         <div class="component template">
-            t
+
+            <div class="overlay" v-if="isEdit">
+                <div class="bg">
+                    <button class="btn btn-success" @click="save">Save</button>
+                    <button class="btn btn-danger" @click="rm(editName)">Delete</button>
+                    <button class="btn btn-info" @click="close">Close</button>
+                    <div class="form-group mt-3">
+                        <label class="h3">/% editName %/</label>
+                        <input type="text" class="form-control mb-2" v-model="editSubj" placeholder="Type subject">
+                        <textarea class="form-control mb-2" v-model="editText" placeholder="Type template" rows="10"></textarea>
+                        <input type="text" class="form-control mb-2" placeholder="Type name of prop" v-for="(p, index) in editProps" :key="index" v-model="editProps[index]">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="editProps.push('')">Add prop</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Templates:</h3>
+            <ul class="list-group mb-4">
+                <li class="list-group-item" v-for="(t, name) in storage.templates" :key="name" @click="edit(name)" style="cursor: pointer;">/% name %/</li>
+            </ul>
+            <hr>
+            <form class="mt-4" @submit.prevent="addTemplate">
+
+                <h3 class="mb-3">Add template</h3>
+                <div class="form-group">
+                    <input type="text" class="form-control" v-model="name" placeholder="Type name">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" v-model="subject" placeholder="Type subject">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" v-model="text" placeholder="Type template" rows="10"></textarea>
+                </div>
+                <div class="form-group">
+                    Add some props (if needed):
+                    <input type="text" class="form-control mb-2" placeholder="Type name of prop" v-for="(p, index) in props" :key="index" v-model="props[index]">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @click="props.push('')">Add prop</button>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Add template</button>
+                </div>
+            </form>
         </div>
     </div>
 </head>
@@ -129,9 +187,9 @@
     <script>'use strict';</script>
     <script src="/assets/js/jq.js" defer></script>
     <script src="/assets/js/bootstrap.min.js" defer></script>
-    <script src="/assets/js/vue.js" defer></script>
+    <script src="/assets/js/vue.min.js" defer></script>
     <script src="/assets/js/router.js" defer></script>
-    <script src="/assets//js/components.js" defer></script>
+    <script src="/assets/js/components.js" defer></script>
     <script src="/assets/js/routes.js" defer></script>
     <script src="/assets/js/script.js" defer></script>
 </body>

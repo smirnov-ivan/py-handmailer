@@ -11,5 +11,9 @@ const app = new Vue({
         .then(async res => {
             this.storage.ul = await res.json()
         })
+        fetch('/getTemplates')
+        .then(async res => {
+            this.storage.templates = await res.json()
+        })
     }
 })
